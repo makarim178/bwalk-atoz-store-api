@@ -1,4 +1,6 @@
-// title, description, price, imagees
+const { log } = require('console')
+const fs = require('fs')
+const path = require('path')
 const products = [
     {
       "id": 1,
@@ -1800,11 +1802,38 @@ const products = [
 
 function refinedProds() {
     return products.map(({title, description, price, images}) => ({
-        name: title,
-        description,
+        name: `'${title.replaceAll("'", "''")}'`,
+        description: `'${description.replaceAll("'", "''")}'`,
         price,
-        imageUrl: images[0]
+        imageUrl: `'${images[0].replaceAll("'", "''")}'`
     }))
 } 
 
-console.log(refinedProds())
+function generateSqlFromProductList() {
+    const prods = refinedProds()
+    let insertStateMent = `INSERT INTO products(name, description, price, image_url) VALUES\n`
+    products.map
+    for (let i = 0; i < prods.length; i++) {
+        insertStateMent += `(${Object.values(prods[i]).join(', ')})`
+        insertStateMent += i == prods.length - 1 ? ';' : ',\n'
+    }
+
+    return insertStateMent
+}
+
+function generateSqlFile() {
+
+    const currentPath = __dirname
+    let targetPath = path.resolve(currentPath, '..')
+    targetPath = path.join(targetPath, 'supabaseMigration/supabase/seed.sql')
+
+    try {
+        const sql = generateSqlFromProductList()
+        fs.writeFileSync(targetPath, sql);
+        console.log('File Created Successfully!');
+    } catch (error) {
+        console.log(error)        
+    }
+}
+
+generateSqlFile()
