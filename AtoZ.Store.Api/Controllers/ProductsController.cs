@@ -1,7 +1,9 @@
+using System.Net;
 using System.Threading.Tasks;
 using AtoZ.Store.Api.Entities;
 using AtoZ.Store.Api.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Supabase;
 
@@ -9,10 +11,10 @@ namespace AtoZ.Store.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly Client _supabase;
-        public ProductController(Client supabase)
+        public ProductsController(Client supabase)
         {
             _supabase = supabase;
         }
@@ -23,27 +25,23 @@ namespace AtoZ.Store.Api.Controllers
         {
             if (request.Name == "") return BadRequest("Name cannot be empty!");
             if (request.Price <= 0) return BadRequest("Product price cannot be empty or <= 0");
-            // product.Name = request.Name;
-            // product.Price = request.Price;
-            // product.Description = request.Description;
 
-            var data = new Product
+            var newRecord = new Product
             {
                 Name = request.Name,
                 Price = request.Price,
                 Description = request.Description
             };
 
-            var response = await _supabase.From<Product>().Insert(data);
+            var response = await _supabase.From<Product>().Insert(newRecord);
 
-            if (response.Models != null && response.Models.Any())
+            if (response.Models == null || !response.Models.Any())
             {
-                var insertedRecord = response.Models.First();
-                Console.WriteLine("==========================INSERTION RESPONSE =======================");
-                Console.WriteLine(insertedRecord.Id);
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Error inserting Data into Server. Please try again later.");
             }
+            var insertedRecord = response.Models.First();            
             
-            return Ok(data);
+            return Ok(insertedRecord.Id);
         }
     }
 }

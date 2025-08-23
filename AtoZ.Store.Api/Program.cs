@@ -1,5 +1,3 @@
-using AtoZ.Store.Api.Data;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Supabase;
 
@@ -12,18 +10,20 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi("v1");
 
-// builder.Services.AddDbContext<AtoZStoreDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("AtoZStoreDatabase")));
+// Supabase Settings
+var supabaseUrl = builder.Configuration["Supabase:Url"];
+var supabaseKey = builder.Configuration["Supabase:Key"];
 
-builder.Services.AddScoped<Supabase.Client>(SupabaseProvider =>
-    new Supabase.Client(
-        builder.Configuration["SupabaseUrl"],
-        builder.Configuration["SupabaseKey"],
-        new SupabaseOptions
-        {
-            AutoRefreshToken = true,
-            AutoConnectRealtime = true
-        }
-    ));
+builder.Services.AddSingleton<Client>(provider =>
+{
+    var options = new SupabaseOptions
+    {
+        AutoRefreshToken = true,
+        AutoConnectRealtime = false
+    };
+
+    return new Client(supabaseUrl, supabaseKey, options);
+});
 
 var app = builder.Build();
 
