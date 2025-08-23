@@ -1,3 +1,7 @@
+using AtoZ.Store.Api.Repositories;
+using AtoZ.Store.Api.Repositories.Interfaces;
+using AtoZ.Store.Api.Services;
+using AtoZ.Store.Api.Services.Interfaces;
 using Scalar.AspNetCore;
 using Supabase;
 
@@ -24,6 +28,9 @@ builder.Services.AddSingleton<Client>(provider =>
 
     return new Client(supabaseUrl, supabaseKey, options);
 });
+
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
 

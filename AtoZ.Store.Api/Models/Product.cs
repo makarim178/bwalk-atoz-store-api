@@ -4,18 +4,19 @@ using Postgrest.Models;
 
 namespace AtoZ.Store.Api.Entities;
 
-[Table("product")]
-public class Product: BaseModel
+[Table("products")]
+public class Product : BaseModel
 {
     [PrimaryKey("id", false)]
-    public string Id { get; set; }
+    public Guid? Id { get; set; }
     [Column("name")]
     public string Name { get; set; } = string.Empty;
     [Column("price")]
     public double Price { get; set; }
     [Column("description")]
-    public string Description { get; set; }
-    [Column("created_at")]
-    public DateTime CreatedAt { get; set; }
-
+    public string? Description { get; set; }
+    [Column("image_url")]
+    public string? ImageUrl { get; set; }
+    [Column("created_at", ignoreOnInsert:true)]
+    public DateTime? CreatedAt { get; set; }
 }

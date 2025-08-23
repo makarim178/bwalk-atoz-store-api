@@ -2,26 +2,20 @@ using System.Net;
 using System.Threading.Tasks;
 using AtoZ.Store.Api.Entities;
 using AtoZ.Store.Api.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+using AtoZ.Store.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Supabase;
+
 
 namespace AtoZ.Store.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductsController(IProductService productService) : ControllerBase
     {
-        private readonly Client _supabase;
-        public ProductsController(Client supabase)
-        {
-            _supabase = supabase;
-        }
-        // public static Product product = new();
+        private readonly IProductService _productService = productService;
 
         [HttpPost]
-        public async Task<ActionResult<Product>> AddProduct(ProductDto request)
+        public async Task<IActionResult> AddProduct(ProductDto request)
         {
             if (request.Name == "") return BadRequest("Name cannot be empty!");
             if (request.Price <= 0) return BadRequest("Product price cannot be empty or <= 0");
@@ -30,18 +24,32 @@ namespace AtoZ.Store.Api.Controllers
             {
                 Name = request.Name,
                 Price = request.Price,
-                Description = request.Description
+                Description = request.Description,
+                ImageUrl = request.ImageUrl
             };
 
-            var response = await _supabase.From<Product>().Insert(newRecord);
+            var response = await _productService.Add(newRecord);
 
-            if (response.Models == null || !response.Models.Any())
+            if (response == null)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Error inserting Data into Server. Please try again later.");
             }
-            var insertedRecord = response.Models.First();            
-            
-            return Ok(insertedRecord.Id);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var response = await _productService.GetAll();
+            return Ok(response);
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var response = await _productService.GetById(id);
+            return Ok(response);
         }
     }
 }
