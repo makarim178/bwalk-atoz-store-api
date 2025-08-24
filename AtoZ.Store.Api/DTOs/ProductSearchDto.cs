@@ -3,17 +3,19 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AtoZ.Store.Api.DTOs;
 
-public class ProductSearchDto
+public class ProductSearchDto: PaginationDto
 {
     public string? Search { get; set; }
-    public double? MinPrice { get; set; }
-    public double? MaxPrice { get; set; }
-    public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 1;
+    public decimal? MinPrice { get; set; }
+    public decimal? MaxPrice { get; set; }
+    
 
-    public bool IsValid(out List<string> errors)
+    public new bool IsValid(out List<string> errors)
     {
-        errors = [];
+        if (!base.IsValid(out errors))
+        {
+            return false;
+        }
 
         if (MinPrice.HasValue && MinPrice < 0)
         {
@@ -28,17 +30,7 @@ public class ProductSearchDto
         if (MinPrice.HasValue && MaxPrice.HasValue && MinPrice > MaxPrice)
         {
             errors.Add("Minimum price should be less than Maximum price");
-        }
-
-        if (Page <= 0)
-        {
-            errors.Add("Page cannot be zero or less");
-        }
-
-        if (PageSize <= 0)
-        {
-            errors.Add("Page size cannot be zero or less");
-        }
+        }       
 
         return errors.Count == 0;
     }

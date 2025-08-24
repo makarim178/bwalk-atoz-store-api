@@ -12,7 +12,7 @@ public class Product : BaseModel
     [Column("name")]
     public string Name { get; set; } = string.Empty;
     [Column("price")]
-    public double Price { get; set; }
+    public decimal Price { get; set; }
     [Column("description")]
     public string? Description { get; set; }
     [Column("image_url")]

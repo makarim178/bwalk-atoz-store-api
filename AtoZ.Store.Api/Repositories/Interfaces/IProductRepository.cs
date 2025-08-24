@@ -7,7 +7,7 @@ namespace AtoZ.Store.Api.Repositories.Interfaces;
 public interface IProductRepository
 {
     Task<Product> Add(Product product);
-    Task<List<Product>> GetAll();
+    Task<(List<Product> products, int totalCount)> GetAll(PaginationDto paginationSearchCriteria);
     Task<Product?> GetById(Guid id);
     Task<(List<Product> products, int totalCount)> Search(ProductSearchDto searchCriteria);
 }

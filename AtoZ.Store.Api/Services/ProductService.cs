@@ -14,9 +14,18 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     {
         return await _productRepository.Add(product);
     }
-    public async Task<List<Product>> GetAll()
+    public async Task<ProductListResponseDto> GetAll(PaginationDto paginationSearchCriteria)
     {
-        return await _productRepository.GetAll();
+        var (products, totalCount) = await _productRepository.GetAll(paginationSearchCriteria);
+        var TotalPages = (int)Math.Ceiling((double)totalCount / paginationSearchCriteria.PageSize);
+        return new ProductListResponseDto
+        {
+            Products = products,
+            TotalCount = totalCount,
+            CurrentPage = paginationSearchCriteria.Page,
+            PageSize = paginationSearchCriteria.PageSize,
+            TotalPages = TotalPages
+        };
     }
 
     public async Task<Product?> GetById(Guid id)

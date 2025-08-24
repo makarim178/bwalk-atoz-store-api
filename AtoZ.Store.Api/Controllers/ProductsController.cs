@@ -42,11 +42,11 @@ namespace AtoZ.Store.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationDto paginationSearchCriteria)
         {
             try
             {
-                var response = await _productService.GetAll();
+                var response = await _productService.GetAll(paginationSearchCriteria);
                 return Ok(response);
             }
             catch (Exception error)

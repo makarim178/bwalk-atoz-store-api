@@ -7,7 +7,7 @@ namespace AtoZ.Store.Api.Services.Interfaces;
 public interface IProductService
 {
     Task<Product> Add(Product product);
-    Task<List<Product>> GetAll();
+    Task<ProductListResponseDto> GetAll(PaginationDto paginationSearchCriteria);
     Task<Product?> GetById(Guid id);
     Task<ProductSearchResponseDto> Search(ProductSearchDto searchCriteria);
 }

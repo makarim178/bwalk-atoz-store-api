@@ -11,10 +11,12 @@ public class ProductRepository(Client supabase) : IProductRepository
 {
     private readonly Client _supabase = supabase;
 
-    public async Task<List<Product>> GetAll()
+    public async Task<(List<Product> products, int totalCount)> GetAll(PaginationDto paginationSearchCriteria)
     {
         var productRecords = await _supabase.From<Product>().Get();
-        return productRecords.Models;
+        int offset = (paginationSearchCriteria.Page - 1) * paginationSearchCriteria.PageSize;
+        var paginatedProducts = productRecords.Models.Skip(offset).Take(paginationSearchCriteria.PageSize).ToList();
+        return (paginatedProducts, productRecords.Models.Count);
     }
 
     public async Task<Product?> GetById(Guid id)
