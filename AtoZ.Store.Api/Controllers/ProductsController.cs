@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using AtoZ.Store.Api.DTOs;
 using AtoZ.Store.Api.Entities;
 using AtoZ.Store.Api.Models;
 using AtoZ.Store.Api.Services.Interfaces;
@@ -17,39 +18,74 @@ namespace AtoZ.Store.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProduct(ProductDto request)
         {
-            if (request.Name == "") return BadRequest("Name cannot be empty!");
-            if (request.Price <= 0) return BadRequest("Product price cannot be empty or <= 0");
-
-            var newRecord = new Product
+            try
             {
-                Name = request.Name,
-                Price = request.Price,
-                Description = request.Description,
-                ImageUrl = request.ImageUrl
-            };
+                if (request.Name == "") return BadRequest("Name cannot be empty!");
+                if (request.Price <= 0) return BadRequest("Product price cannot be empty or <= 0");
 
-            var response = await _productService.Add(newRecord);
+                var newRecord = new Product
+                {
+                    Name = request.Name,
+                    Price = request.Price,
+                    Description = request.Description,
+                    ImageUrl = request.ImageUrl
+                };
 
-            if (response == null)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Error inserting Data into Server. Please try again later.");
+                var response = await _productService.Add(newRecord);
+                return Ok(response);                
             }
-
-            return Ok(response);
+            catch (Exception error)
+            {
+                    return StatusCode((int)HttpStatusCode.InternalServerError, error.Message);
+                
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var response = await _productService.GetAll();
-            return Ok(response);
+            try
+            {
+                var response = await _productService.GetAll();
+                return Ok(response);
+            }
+            catch (Exception error)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, error.Message);
+            }
         }
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var response = await _productService.GetById(id);
-            return Ok(response);
+            try
+            {
+                var response = await _productService.GetById(id);
+                return Ok(response);                
+            }
+            catch (Exception error)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, error.Message);
+            }
+        }
+
+        [HttpPost("search")]
+        public async Task<IActionResult> Search([FromBody] ProductSearchDto searchCriteria)
+        {
+            if (!searchCriteria.IsValid(out var errors))
+            {
+                return BadRequest(new { Errors = errors });
+            }
+
+            try
+            {
+                var response = await _productService.Search(searchCriteria);
+                return Ok(response);
+            }
+            catch (Exception error)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, error.Message);
+            }
         }
     }
 }

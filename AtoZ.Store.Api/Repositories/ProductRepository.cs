@@ -1,4 +1,5 @@
 using System;
+using AtoZ.Store.Api.DTOs;
 using AtoZ.Store.Api.Entities;
 using AtoZ.Store.Api.Models;
 using AtoZ.Store.Api.Repositories.Interfaces;
@@ -25,5 +26,37 @@ public class ProductRepository(Client supabase) : IProductRepository
     {
         var response = await _supabase.From<Product>().Insert(product);
         return response.Models.First();
+    }
+
+    public async Task<(List<Product> products, int totalCount)> Search(ProductSearchDto searchCriteria)
+    {
+        var searchQuery = _supabase.From<Product>();
+        if (!string.IsNullOrWhiteSpace(searchCriteria.Search))
+        {
+            var searchTerm = searchCriteria.Search.Trim().ToLower();
+            searchQuery = (Supabase.Interfaces.ISupabaseTable<Product, Supabase.Realtime.RealtimeChannel>)
+                searchQuery.Filter(p => p.Name, Postgrest.Constants.Operator.ILike, $"%{searchTerm}%");
+        }
+
+        if (searchCriteria.MinPrice.HasValue)
+        {
+            searchQuery = (Supabase.Interfaces.ISupabaseTable<Product, Supabase.Realtime.RealtimeChannel>)
+                searchQuery.Where(p => p.Price >= searchCriteria.MinPrice.Value);
+        }
+
+        if (searchCriteria.MaxPrice.HasValue)
+        {
+            searchQuery = (Supabase.Interfaces.ISupabaseTable<Product, Supabase.Realtime.RealtimeChannel>)
+                searchQuery.Where(p => p.Price <= searchCriteria.MaxPrice.Value);            
+        }
+
+
+        var result = await searchQuery.Get();
+
+        int offset = (searchCriteria.Page - 1) * searchCriteria.PageSize;
+        var paginatedProducts = result.Models.Skip(offset).Take(searchCriteria.PageSize).ToList();
+
+        return (paginatedProducts, result.Models.Count);
+
     }
 }

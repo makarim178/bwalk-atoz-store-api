@@ -1,4 +1,5 @@
 using System;
+using AtoZ.Store.Api.DTOs;
 using AtoZ.Store.Api.Entities;
 using AtoZ.Store.Api.Repositories.Interfaces;
 using AtoZ.Store.Api.Services.Interfaces;
@@ -21,5 +22,19 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     public async Task<Product?> GetById(Guid id)
     {
         return await _productRepository.GetById(id);
+    }
+
+    public async Task<ProductSearchResponseDto> Search(ProductSearchDto searchCriteria)
+    {
+        var (products, totalCount) = await _productRepository.Search(searchCriteria);
+        var TotalPages = (int)Math.Ceiling((double)totalCount / searchCriteria.PageSize);
+        return new ProductSearchResponseDto
+        {
+            Products = products,
+            TotalCount = totalCount,
+            CurrentPage = searchCriteria.Page,
+            PageSize = searchCriteria.PageSize,
+            TotalPages = TotalPages
+        };
     }
 }
