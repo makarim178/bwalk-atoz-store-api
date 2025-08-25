@@ -47,6 +47,23 @@ namespace AtoZ.Store.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        //Get Cart
+        [HttpGet("{sessionId:guid}")]
+        public async Task<IActionResult> GetCart(Guid sessionId)
+        {
+            // if (cartId == Guid.Empty) return BadRequest("Cart Id is required!");
+            try
+            {
+                var response = await _cartService.GetCart(sessionId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
         //  Remove Cart Item: Delete: args - cartItemId, return Boolean("cartItem")
         [HttpDelete("cartItem")]
         public async Task<IActionResult> RemoveCartItem(Guid cartItemId)

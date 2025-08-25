@@ -20,7 +20,8 @@ public class CartRepository(Client supabase) : ICartRepository
 
     public async Task<CartItem?> AddItem(CartItem cartitem)
     {
-
+        var prodResponse = await _supabase.From<Product>().Where(p => p.Id == cartitem.ProductId).Single()
+            ?? throw new Exception("Product Id Does not exists!");
         //Product verification is required
         var response = await _supabase.From<CartItem>().Insert(cartitem);
         return response.Models.FirstOrDefault();

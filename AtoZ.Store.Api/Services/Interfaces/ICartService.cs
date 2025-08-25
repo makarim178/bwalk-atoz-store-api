@@ -7,7 +7,7 @@ namespace AtoZ.Store.Api.Services.Interfaces;
 public interface ICartService
 {
     Task<CartDto?> AddCart(Guid? sessionId);
-    Task<CartDto?> GetCart(Guid? cartId);
+    Task<CartDto?> GetCart(Guid? sessionId);
     Task<CartItemDto?> AddCartItem(CartItem cartItem);
     Task<List<CartItemDto>> GetCartItems(Guid? cartId);
 

@@ -90,6 +90,7 @@ public class CartService(ICartRepository cartRepository) : ICartService
             CartItemId = (Guid)cartItem.Id,
             ProductId = (Guid)productResponse.Id,
             ProductName = productResponse.Name,
+            ImageUrl = productResponse.ImageUrl,
             Price = productResponse.Price,
             Quantity = cartItem.Quantity
         };
