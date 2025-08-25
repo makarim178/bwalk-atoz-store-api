@@ -14,5 +14,5 @@ public class CartItem : BaseModel
     [Column("product_id")]
     public Guid ProductId { get; set; }
     [Column("quantity")]
-    public int quantity { get; set; }
+    public int Quantity { get; set; }
 }
