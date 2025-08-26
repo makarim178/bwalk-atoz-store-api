@@ -14,4 +14,5 @@ public interface ICartService
     Task<CartItemDto> GetCartItem(CartItem cartItem);
     Task<Boolean> UpdateCartItem(CartItemDto cartItem);
     Task<Boolean> RemoveItem(Guid cartItemId);
+    Task<Boolean> UpdateOrderStatus(Guid sessionId, Boolean value);
 }

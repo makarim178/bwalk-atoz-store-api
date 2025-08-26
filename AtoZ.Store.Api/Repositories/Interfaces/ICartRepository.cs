@@ -15,6 +15,6 @@ public interface ICartRepository
     Task<CartItem?> AddItem(CartItem cartItem);
     Task<Boolean> UpdateItem(CartItemDto cartItem);
     Task<Boolean> RemoveItem(Guid cartItemId);
-
     Task<Product?> GetProductById(Guid productId);
+    Task<Boolean> UpdateOrderStatus(Guid sessionId, Boolean value);
 }

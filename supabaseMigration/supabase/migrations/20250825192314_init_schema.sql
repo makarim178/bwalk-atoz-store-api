@@ -1,0 +1,2 @@
+ALTER TABLE carts 
+    ADD COLUMN is_ordered BOOLEAN DEFAULT FALSE;

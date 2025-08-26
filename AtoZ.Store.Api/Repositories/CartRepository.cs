@@ -14,7 +14,10 @@ public class CartRepository(Client supabase) : ICartRepository
 
     public async Task<Cart?> GetCart(Guid? sessionId)
     {
-        var cartResponse = await _supabase.From<Cart>().Where(c => c.SessionId == sessionId).Get();
+        var cartResponse = await _supabase.From<Cart>()
+            .Where(c => c.SessionId == sessionId)
+            .Where(c => c.IsOrdered == false)
+            .Get();
         return cartResponse.Models.FirstOrDefault();
     }
 
@@ -29,7 +32,7 @@ public class CartRepository(Client supabase) : ICartRepository
 
     public async Task<Cart> Create(Guid? sessionId)
     {
-        if (sessionId == null) throw new Exception("Session Id is required!");
+        if (!sessionId.HasValue) throw new Exception("Session Id is required!");
 
         var cart = await GetCart(sessionId);
 
@@ -45,7 +48,7 @@ public class CartRepository(Client supabase) : ICartRepository
 
     public async Task<List<CartItem>> GetItems(Guid? cartId)
     {
-        if (cartId == null) throw new Exception("Cart Id cannot be null");
+        if (!cartId.HasValue) throw new Exception("Cart Id cannot be null");
         var repsonse = await _supabase.From<CartItem>()
             .Where(ci => ci.CartId == cartId).Get();
         return repsonse.Models;
@@ -86,7 +89,7 @@ public class CartRepository(Client supabase) : ICartRepository
 
     public async Task<CartItem?> GetCartItem(Guid? cartItemId)
     {
-        if (cartItemId == null) throw new Exception("Cart Item Id is required");
+        if (!cartItemId.HasValue) throw new Exception("Cart Item Id is required");
         var response = await _supabase.From<CartItem>().Where(c => c.Id == cartItemId).Get();
         return response.Models.FirstOrDefault();
     }
@@ -109,5 +112,15 @@ public class CartRepository(Client supabase) : ICartRepository
     public async Task<Product?> GetProductById(Guid productId)
     {
         return await _supabase.From<Product>().Where(p => p.Id == productId).Single();
+    }
+
+    public async Task<Boolean> UpdateOrderStatus(Guid sessionId, Boolean value)
+    {
+
+        var response = await _supabase.From<Cart>()
+            .Where(c => c.SessionId == sessionId)
+            .Set(c => c.IsOrdered, value)
+            .Update();
+        return response?.ResponseMessage?.IsSuccessStatusCode ?? false;
     }
 }
