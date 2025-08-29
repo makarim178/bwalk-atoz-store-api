@@ -1,5 +1,4 @@
-using System;
-using System.Collections.ObjectModel;
+
 using AtoZ.Store.Api.Models;
 using AtoZ.Store.Api.Repositories.Interfaces;
 using Microsoft.IdentityModel.Tokens;
@@ -22,6 +21,34 @@ public class OrderRepository(Client supabase) : IOrderRepository
         var response = await _supabase.From<Order>().Insert(order, new Postgrest.QueryOptions { Returning = Postgrest.QueryOptions.ReturnType.Representation} );
         Console.WriteLine(response);
         return response.Models.FirstOrDefault();
+    }
+
+    public async Task<Order?> GetOrderById(Guid orderId)
+    {
+        try
+        {
+            var response = await _supabase.From<Order>().Where(o => o.Id == orderId).Get();
+            return response.Models.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Could not retrieve order: {ex}");
+            throw new Exception("Could not get order");
+        }
+    }
+
+    public async Task<List<OrderItem>> GetOrderItemById(Guid orderId)
+    {
+        try
+        {
+            var respose = await _supabase.From<OrderItem>().Where(oi => oi.OrderId == orderId).Get();
+            return respose.Models;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Could not order items: {ex}");
+            throw new Exception("Could not get order items by order id");
+        }
     }
 
     public async Task<bool> RemoveOrder(Guid sessionId)

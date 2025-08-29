@@ -3,6 +3,7 @@ namespace AtoZ.Store.Api.Models;
 
 public class ProductDto
 {
+    public Guid ProductId { get; set; }
     public string Name { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public string? Description { get; set; }

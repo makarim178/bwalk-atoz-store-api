@@ -96,4 +96,31 @@ public class OrderService (ICartService cartService, IOrderRepository orderRepos
             throw new Exception("Some Error Occured: Reverted changes");
         }
     }
+
+    public async Task<OrderDto> GetOrderById(Guid orderId)
+    {
+        var order = await _orderRepository.GetOrderById(orderId)
+            ?? throw new Exception("Order Id does not exist!");
+
+        if (!order.Id.HasValue) throw new Exception("Order Id is invalid!");
+
+        var orderItems = await _orderRepository.GetOrderItemById(orderId)
+            ?? throw new Exception("Could not fetch order items!");
+
+        var orderItemsDto = orderItems.Select(oi => new OrderItemDto
+        {
+            OrderItemId = oi.Id,
+            ProductId = oi.ProductId,
+            Price = oi.Price,
+            Quantity = oi.Quantity
+        });
+
+        return new OrderDto
+        {
+            Id = order.Id.Value,
+            SessionId = order.SessionId,
+            CreatedAt = order.CreatedAt,
+            Items = [.. orderItemsDto]
+        };
+    }
 }

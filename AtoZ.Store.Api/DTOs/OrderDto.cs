@@ -8,5 +8,5 @@ public class OrderDto
     public Guid SessionId { get; set; }
     public List<OrderItemDto> Items { get; set; } = [];
     public decimal Total => Items.Sum(i => i.LineTotal);
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
 }

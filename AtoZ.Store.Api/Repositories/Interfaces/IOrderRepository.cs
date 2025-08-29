@@ -11,4 +11,6 @@ public interface IOrderRepository
     Task<List<OrderItem>?> AddOrderItems(ICollection<OrderItem> items);
 
     Task<Boolean> RemoveOrder(Guid sessionId);
+    Task<Order?> GetOrderById(Guid sessionId);
+    Task<List<OrderItem>> GetOrderItemById(Guid orderId);
 }

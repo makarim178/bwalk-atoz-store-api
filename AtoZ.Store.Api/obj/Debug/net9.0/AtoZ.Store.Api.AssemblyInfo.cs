@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AtoZ.Store.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+97057c7b95077e5e03f3dd91b9b9d8a18f7ccf4b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1291cba30d2a181f2610be83de84497d4592a3b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("AtoZ.Store.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AtoZ.Store.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
